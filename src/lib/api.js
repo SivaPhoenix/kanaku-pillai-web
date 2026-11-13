@@ -32,12 +32,27 @@ async function parseError(res) {
   });
 }
 
-// Calls the API on this origin (the dev proxy / reverse proxy forwards /api). Returns the `data` of the envelope.
-export async function apiRequest(path, { method = "GET", body, auth = true, signal } = {}) {
+// Calls the API on this origin (the dev proxy / reverse proxy forwards /api).
+// responseType: "data" (default) returns the envelope's `data`; "envelope" returns { data, page }; "blob" returns
+// { blob, headers } for file downloads. Extra `headers` with undefined values are skipped.
+export async function apiRequest(
+  path,
+  {
+    method = "GET",
+    body,
+    auth = true,
+    signal,
+    headers: extraHeaders = {},
+    responseType = "data",
+  } = {},
+) {
   let tokenUsed = null;
   const send = () => {
     const headers = { Accept: "application/json", "X-Client-Platform": "web" };
     if (body !== undefined) headers["Content-Type"] = "application/json";
+    for (const [name, value] of Object.entries(extraHeaders)) {
+      if (value !== undefined && value !== null) headers[name] = value;
+    }
     tokenUsed = auth ? getAccessToken() : null;
     if (tokenUsed) headers.Authorization = `Bearer ${tokenUsed}`;
     return fetch(`${API_BASE}${path}`, {
@@ -75,13 +90,23 @@ export async function apiRequest(path, { method = "GET", body, auth = true, sign
   }
 
   if (!res.ok) throw await parseError(res);
+  if (responseType === "blob") return { blob: await res.blob(), headers: res.headers };
   if (res.status === 204) return null;
   const payload = await res.json();
-  return payload.data;
+  return responseType === "envelope"
+    ? { data: payload.data, page: payload.page ?? null }
+    : payload.data;
+}
+
+// Downloads a file (CSV export) with the same auth and refresh handling as JSON calls.
+export function apiDownload(path, options) {
+  return apiRequest(path, { ...options, method: "GET", responseType: "blob" });
 }
 
 export const api = {
   get: (path, options) => apiRequest(path, { ...options, method: "GET" }),
+  getPage: (path, options) =>
+    apiRequest(path, { ...options, method: "GET", responseType: "envelope" }),
   post: (path, body, options) => apiRequest(path, { ...options, method: "POST", body }),
   patch: (path, body, options) => apiRequest(path, { ...options, method: "PATCH", body }),
   put: (path, body, options) => apiRequest(path, { ...options, method: "PUT", body }),

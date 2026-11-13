@@ -5,8 +5,6 @@ import { cn } from "../../lib/cn.js";
 import { useAuth } from "../../hooks/useAuth.js";
 import { Avatar, Button, Icon, Logo, Spinner } from "../ui/index.js";
 
-const COMING_SOON = "Coming soon";
-
 const navState = ({ isActive }) => (isActive ? "bg-primary/20 text-text" : "text-text-muted-2");
 
 function TabLink({ item }) {
@@ -36,15 +34,14 @@ function PhoneTabBar() {
         <TabLink key={item.to} item={item} />
       ))}
       <div className="flex flex-1 justify-center">
-        <button
-          type="button"
-          disabled
+        <Link
+          to="/add"
           aria-label="New entry"
-          title={COMING_SOON}
-          className="inline-flex size-14 items-center justify-center rounded-xl bg-primary text-on-primary disabled:cursor-not-allowed disabled:opacity-50"
+          title="New entry"
+          className="inline-flex size-14 items-center justify-center rounded-xl bg-primary text-on-primary"
         >
           <Icon name="plus" size={26} />
-        </button>
+        </Link>
       </div>
       {PHONE_TABS.right.map((item) => (
         <TabLink key={item.to} item={item} />
@@ -76,15 +73,14 @@ function Rail() {
           </li>
         ))}
       </ul>
-      <button
-        type="button"
-        disabled
+      <Link
+        to="/add"
         aria-label="New entry"
-        title={COMING_SOON}
-        className="mt-auto inline-flex size-14 items-center justify-center rounded-xl bg-primary text-on-primary disabled:cursor-not-allowed disabled:opacity-50"
+        title="New entry"
+        className="mt-auto inline-flex size-14 items-center justify-center rounded-xl bg-primary text-on-primary"
       >
         <Icon name="plus" size={24} />
-      </button>
+      </Link>
     </nav>
   );
 }
@@ -97,7 +93,7 @@ function Sidebar() {
       className="fixed top-6 bottom-6 left-6 z-30 hidden w-[232px] flex-col gap-4 rounded-2xl surface-l2 p-4 desktop:flex large:w-[248px]"
     >
       <Logo withWordmark className="px-2 pt-1" />
-      <Button fullWidth leftIcon="plus" disabled title={COMING_SOON}>
+      <Button as={Link} to="/add" fullWidth leftIcon="plus">
         New entry
       </Button>
       <ul className="flex flex-col gap-1">

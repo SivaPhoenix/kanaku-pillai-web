@@ -4,6 +4,7 @@ import { useState } from "react";
 import { RouterProvider } from "react-router";
 import { AuthProvider } from "./context/AuthProvider.jsx";
 import { ThemeProvider } from "./context/ThemeProvider.jsx";
+import { ToastProvider } from "./context/ToastProvider.jsx";
 import { config } from "./lib/config.js";
 import { createQueryClient } from "./lib/query-client.js";
 import { router } from "./router.jsx";
@@ -21,7 +22,9 @@ export function App() {
       <QueryClientProvider client={queryClient}>
         <MaybeGoogleProvider>
           <AuthProvider>
-            <RouterProvider router={router} />
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
           </AuthProvider>
         </MaybeGoogleProvider>
       </QueryClientProvider>

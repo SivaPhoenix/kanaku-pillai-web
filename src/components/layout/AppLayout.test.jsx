@@ -34,11 +34,11 @@ describe("AppLayout", () => {
     }
   });
 
-  it("renders a disabled New entry control and the main landmark", () => {
+  it("links every New entry control to the Add screen and renders the main landmark", () => {
     renderLayout();
-    const buttons = screen.getAllByRole("button", { name: "New entry" });
-    expect(buttons.length).toBeGreaterThan(0);
-    buttons.forEach((button) => expect(button).toBeDisabled());
+    const links = screen.getAllByRole("link", { name: "New entry" });
+    expect(links.length).toBe(3);
+    links.forEach((link) => expect(link).toHaveAttribute("href", "/add"));
     expect(screen.getByRole("main")).toHaveAttribute("id", "main");
   });
 });

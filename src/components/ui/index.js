@@ -5,6 +5,8 @@ export { Button } from "./Button.jsx";
 export { Card } from "./Card.jsx";
 export { Checkbox } from "./Checkbox.jsx";
 export { Chip } from "./Chip.jsx";
+export { ConfirmDialog } from "./ConfirmDialog.jsx";
+export { Dialog } from "./Dialog.jsx";
 export { Divider } from "./Divider.jsx";
 export { EmptyState } from "./EmptyState.jsx";
 export { Icon } from "./Icon.jsx";

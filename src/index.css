@@ -223,6 +223,14 @@
     @apply min-h-dvh bg-bg font-sans text-text antialiased;
   }
 
+  /* Product decision: no visible scrollbars anywhere; content still scrolls by wheel, touch and keyboard. */
+  * {
+    scrollbar-width: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-primary;
   }

@@ -51,6 +51,18 @@ export const router = createBrowserRouter([
                 path: "settings",
                 lazy: page(() => import("./pages/SettingsPage.jsx"), "SettingsPage"),
               },
+              {
+                path: "add",
+                lazy: page(() => import("./pages/AddTransactionPage.jsx"), "AddTransactionPage"),
+              },
+              {
+                path: "tx/:id",
+                lazy: page(() => import("./pages/TransactionPage.jsx"), "TransactionPage"),
+              },
+              {
+                path: "tx/:id/edit",
+                lazy: page(() => import("./pages/AddTransactionPage.jsx"), "AddTransactionPage"),
+              },
             ],
           },
         ],
