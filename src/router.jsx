@@ -35,6 +35,8 @@ export const router = createBrowserRouter([
       {
         element: <RequireAuth />,
         children: [
+          // First-run setup is full-page (no navigation shell); RequireAuth sends unfinished users here.
+          { path: "setup", lazy: page(() => import("./pages/SetupPage.jsx"), "SetupPage") },
           {
             element: <AppLayout />,
             children: [
