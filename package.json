@@ -1,6 +1,6 @@
 {
   "name": "kanaku-pillai-web",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Kanaku Pillai expense tracker - responsive web app",
   "type": "module",
