@@ -1,0 +1,61 @@
+import { createBrowserRouter, Navigate } from "react-router";
+import { AppLayout } from "./components/layout/AppLayout.jsx";
+import { AuthLayout } from "./components/layout/AuthLayout.jsx";
+import { RouteError } from "./components/layout/RouteError.jsx";
+import { RedirectIfAuthenticated, RequireAuth } from "./routes/guards.jsx";
+
+// Each page loads on demand, so the first visit only downloads the screen it shows.
+const page = (load, name) => () => load().then((module) => ({ Component: module[name] }));
+
+export const router = createBrowserRouter([
+  {
+    errorElement: <RouteError />,
+    children: [
+      { index: true, element: <Navigate to="/month" replace /> },
+      {
+        element: <RedirectIfAuthenticated />,
+        children: [
+          {
+            path: "auth",
+            element: <AuthLayout />,
+            children: [
+              { index: true, element: <Navigate to="login" replace /> },
+              {
+                path: "login",
+                lazy: page(() => import("./pages/auth/LoginPage.jsx"), "LoginPage"),
+              },
+              {
+                path: "signup",
+                lazy: page(() => import("./pages/auth/SignupPage.jsx"), "SignupPage"),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        element: <RequireAuth />,
+        children: [
+          {
+            element: <AppLayout />,
+            children: [
+              { path: "month", lazy: page(() => import("./pages/MonthPage.jsx"), "MonthPage") },
+              { path: "daily", lazy: page(() => import("./pages/DailyPage.jsx"), "DailyPage") },
+              { path: "stats", lazy: page(() => import("./pages/StatsPage.jsx"), "StatsPage") },
+              {
+                path: "accounts",
+                lazy: page(() => import("./pages/AccountsPage.jsx"), "AccountsPage"),
+              },
+              { path: "search", lazy: page(() => import("./pages/SearchPage.jsx"), "SearchPage") },
+              { path: "lists", lazy: page(() => import("./pages/ListsPage.jsx"), "ListsPage") },
+              {
+                path: "settings",
+                lazy: page(() => import("./pages/SettingsPage.jsx"), "SettingsPage"),
+              },
+            ],
+          },
+        ],
+      },
+      { path: "*", lazy: page(() => import("./pages/NotFoundPage.jsx"), "NotFoundPage") },
+    ],
+  },
+]);

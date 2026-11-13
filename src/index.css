@@ -1,0 +1,238 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Kanaku Pillai design tokens (design spec §2). This is the ONLY stylesheet.
+   Components use the Tailwind classes these produce (bg-primary, text-income,
+   border-line, surface-l1 …), never hex values.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* Base */
+  --bg: #f3f1ec;
+  --text: #1b1a18;
+  --text-muted: #5e5b55;
+  --text-muted-2: #3a3833;
+
+  /* Interaction: ink. Primary = filled buttons, selected tab, FAB, active nav */
+  --primary: #1b1a18;
+  --on-primary: #f3f1ec;
+  /* Secondary = translucent card fill used by secondary buttons and icon buttons */
+  --secondary: rgb(255 255 255 / 0.72);
+  --on-secondary: #1b1a18;
+  --link: #1b1a18;
+
+  /* Money and status */
+  --income: #08698c;
+  --expense: #a8470a;
+  --transfer: #55524b;
+  --danger: #b4232f;
+  --danger-solid: #c4283b;
+  --success: #17734a;
+  --warning: #8a6500;
+
+  /* Lines and overlays */
+  --line: rgb(27 26 24 / 0.1);
+  --scrim: rgb(27 26 24 / 0.35);
+
+  /* Glass tiers: L0 tint (rows, chips, inputs), L1 card, L2 elevated (nav, sheets, modals) */
+  --surface-0: rgb(27 26 24 / 0.035);
+  --surface-0-border: rgb(27 26 24 / 0.08);
+  --surface-1: rgb(255 255 255 / 0.72);
+  --surface-1-border: rgb(27 26 24 / 0.08);
+  --surface-2: rgb(255 255 255 / 0.88);
+  --surface-2-border: rgb(27 26 24 / 0.1);
+
+  /* Category / account palette (user-picked) */
+  --c1: #a8470a;
+  --c2: #2457c5;
+  --c3: #7a3fc4;
+  --c4: #8a6500;
+  --c5: #17734a;
+  --c6: #b4285e;
+  --c7: #0f766e;
+}
+
+[data-theme="dark"] {
+  --bg: #101113;
+  --text: #eceae4;
+  --text-muted: #9d9a93;
+  --text-muted-2: #c9c6bf;
+
+  --primary: #eceae4;
+  --on-primary: #101113;
+  --secondary: rgb(255 255 255 / 0.05);
+  --on-secondary: #eceae4;
+  --link: #eceae4;
+
+  --income: #4cc9f0;
+  --expense: #ff9f5a;
+  --transfer: #b9b5ac;
+  --danger: #ff6b7a;
+  --danger-solid: #c4283b;
+  --success: #7be0ad;
+  --warning: #ffd166;
+
+  --line: rgb(255 255 255 / 0.1);
+  --scrim: rgb(0 0 0 / 0.6);
+
+  --surface-0: rgb(255 255 255 / 0.035);
+  --surface-0-border: rgb(255 255 255 / 0.08);
+  --surface-1: rgb(255 255 255 / 0.05);
+  --surface-1-border: rgb(255 255 255 / 0.1);
+  --surface-2: rgb(255 255 255 / 0.08);
+  --surface-2-border: rgb(255 255 255 / 0.14);
+
+  --c1: #ff9f5a;
+  --c2: #6fa8ff;
+  --c3: #c08bff;
+  --c4: #ffd166;
+  --c5: #7be0ad;
+  --c6: #ff7aa8;
+  --c7: #5ee0d0;
+}
+
+/* Reduce transparency: every glass tier becomes a solid surface (spec §2.2 fallback). */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --secondary: #ffffff;
+    --surface-1: #ffffff;
+    --surface-2: #ffffff;
+  }
+  [data-theme="dark"] {
+    --secondary: #1a1b1e;
+    --surface-1: #1a1b1e;
+    --surface-2: #1a1b1e;
+  }
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Map the variables into Tailwind's theme so classes like bg-primary and text-income exist. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-muted-2: var(--text-muted-2);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-link: var(--link);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
+  --color-transfer: var(--transfer);
+  --color-danger: var(--danger);
+  --color-danger-solid: var(--danger-solid);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-line: var(--line);
+  --color-scrim: var(--scrim);
+  --color-surface-0: var(--surface-0);
+  --color-surface-0-border: var(--surface-0-border);
+  --color-surface-1: var(--surface-1);
+  --color-surface-1-border: var(--surface-1-border);
+  --color-surface-2: var(--surface-2);
+  --color-surface-2-border: var(--surface-2-border);
+  --color-c1: var(--c1);
+  --color-c2: var(--c2);
+  --color-c3: var(--c3);
+  --color-c4: var(--c4);
+  --color-c5: var(--c5);
+  --color-c6: var(--c6);
+  --color-c7: var(--c7);
+}
+
+@theme {
+  /* Spec §5 breakpoints. Mobile first: unprefixed = phone, then tablet:, desktop:, large:. */
+  --breakpoint-*: initial;
+  --breakpoint-tablet: 600px;
+  --breakpoint-desktop: 1280px;
+  --breakpoint-large: 1680px;
+
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-tamil: "Noto Sans Tamil", "IBM Plex Sans", sans-serif;
+
+  /* Spec §2.4 radius scale; nothing above 20. */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-2xl: 18px;
+  --radius-sheet: 20px;
+
+  --shadow-elevated: 0 12px 40px rgb(0 0 0 / 0.14);
+
+  --animate-sheet-up: sheet-up 250ms ease-out;
+  --animate-fade-scale: fade-scale 200ms ease-out;
+
+  @keyframes sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade-scale {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/* Glass tiers as utilities (spec §2.2). L0 never blurs; L1 blurs on web only; L2 is the elevated surface. */
+@utility surface-l0 {
+  background-color: var(--surface-0);
+  border: 1px solid var(--surface-0-border);
+}
+
+@utility surface-l1 {
+  background-color: var(--surface-1);
+  border: 1px solid var(--surface-1-border);
+  backdrop-filter: blur(24px);
+}
+
+@utility surface-l2 {
+  background-color: var(--surface-2);
+  border: 1px solid var(--surface-2-border);
+  backdrop-filter: blur(40px) saturate(170%);
+  box-shadow: var(--shadow-elevated);
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply min-h-dvh bg-bg font-sans text-text antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

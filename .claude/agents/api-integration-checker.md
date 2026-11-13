@@ -8,6 +8,7 @@ model: sonnet
 You compare the Kanaku Pillai web client's data layer with the backend contract. The contract is `../kanaku-pillai-backend/docs/api/README.md`. If the sibling repo is absent, read it from GitHub with `gh api repos/SivaPhoenix/kanaku-pillai-backend/contents/docs/api/README.md` (decode the base64 content). Contract changes that are not yet merged are visible with `git -C ../kanaku-pillai-backend diff main -- docs/api`.
 
 ## Check
+
 1. **Endpoints:** every call in `src/features/*/api.js` and `src/lib/api.js` uses a documented method and path. List documented endpoints the client needs but doesn't call yet, and calls to undocumented endpoints.
 2. **Shapes:** the Zod schemas in `src/schemas` match the documented shapes field by field (names, optionality, enums). `id` is a string. No `_id`.
 3. **Money:** `amountMinor` is validated and handled as an integer. Input parsing uses no float multiplication. All display goes through `formatMoney()`. No client-side recomputation of totals or balances the API returns. Transfers are not added to income or expense.
@@ -17,4 +18,5 @@ You compare the Kanaku Pillai web client's data layer with the backend contract.
 7. **Writes:** `Idempotency-Key` per create submission. Mutations invalidate the right query keys: a transaction change touches month, day, stats, accounts and search.
 
 ## Report
+
 `file:line — mismatch — fix`, then a "Contract gaps" list for the backend repo (things the UI needs that the contract lacks). Do not edit files.

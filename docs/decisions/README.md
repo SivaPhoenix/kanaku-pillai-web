@@ -9,12 +9,15 @@ One file per decision: `ADR-NNNN-short-title.md` (for example `ADR-0001-auth-on-
 - Status: Proposed | Accepted | Superseded by ADR-NNNN
 
 ## Context
+
 What forced the decision.
 
 ## Decision
+
 What we chose.
 
 ## Consequences
+
 What gets easier, what gets harder, what we must now do.
 ```
 

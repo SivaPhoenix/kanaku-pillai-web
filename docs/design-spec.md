@@ -4,6 +4,8 @@
 >
 > **Stack update (Nov 2026, see `docs/PROJECT.md` §5):** the product now ships as two clients instead of one React Native Web codebase. **Web** is React + Vite + Tailwind CSS (`kanaku-pillai-web`) and implements all four shells (§5). **App** is Expo + NativeWind (`kanaku-pillai-app`) and implements phone and tablet. Both clients style with Tailwind classes only. Read §0.1, §2.2 "Implementation" and §2.3 "load with expo-font" in that light. The design rules themselves are unchanged.
 >
+> **Icons update (13 Nov 2026, product owner):** emoji are never used anywhere in the UI, including category and account icons. Every icon comes from an icon library (web: react-icons Lucide set; app: lucide-react-native) and users pick category/account icons from a fixed icon list. Wherever this spec mentions emoji (§1 Lists, §2.5, §7.7, §7.11, §10 fixtures), read "icon" instead.
+>
 > **App name:** Kanaku Pillai (கணக்குப் பிள்ளை, "the accountant"). Logo mark: the Tamil letter **க** (short ka). The logo direction is not final yet; use the `க` glyph in a rounded tile as a placeholder.
 
 ---
