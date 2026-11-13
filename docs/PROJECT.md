@@ -102,6 +102,7 @@ These come from design spec §1.1 and §9. Change them only with the product own
 - Auth runs on the backend itself (no Supabase or Firebase). This resolves design spec open question 3.
 - Web is a separate React + Vite app, not React Native Web. This overrides design spec §0.1. The web app must implement all four layout shells (phone, tablet, desktop, large).
 - Styling is Tailwind CSS only in both clients, with the root setup in `src/index.css`.
+- **No emoji in the UI, ever** (13 Nov 2026), including category and account icons. Icons come only from an icon library: react-icons (Lucide set) on the web, lucide-react-native in the app.
 
 **Still open** (ask the product owner before building anything that depends on them):
 
