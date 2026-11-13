@@ -2,7 +2,7 @@
 
 Responsive web app for **Kanaku Pillai** (கணக்குப் பிள்ளை, "the accountant"), a production-grade personal expense tracker. It serves phone browsers, tablets, desktops and large screens from one codebase, in light and dark themes.
 
-**Stack:** React 19 · Vite · TypeScript · Tailwind CSS v4 (only styling system, root in `src/index.css`) · React Router · TanStack Query
+**Stack:** React 19 · Vite · JavaScript · Tailwind CSS v4 (only styling system, root in `src/index.css`) · React Router · TanStack Query
 
 **Status:** project context and design defined; code scaffold next.
 

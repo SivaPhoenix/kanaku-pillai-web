@@ -27,4 +27,4 @@ Gradient blobs and glows, purple or indigo accents, emoji or ☆ ★ ⇄ ↑ ↓
 ## Accessibility
 Labels associated with inputs, `aria-label` on icon-only buttons, touch targets ≥ 44×44, contrast ≥ 4.5:1 (light-mode tokens are not dark-mode hex reused), focus-visible styles, a focus trap plus Esc in modals, charts with text alternatives, no information conveyed by hover alone.
 
-Run `npm run lint` and `npm run typecheck` and report the real results. Do not edit files.
+Run `npm run lint` and `npm run format:check` and report the real results. Do not edit files.
