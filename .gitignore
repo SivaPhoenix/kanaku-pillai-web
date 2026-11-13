@@ -147,3 +147,28 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# --- Kanaku Pillai ---
+# Env: commit only the example file
+.env
+.env.*
+!.env.example
+
+# Claude Code: CLAUDE.md and .claude/agents ARE tracked; personal overrides are not
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Build and tooling output
+dist/
+build/
+coverage/
+.vite/
+test-results/
+playwright-report/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
