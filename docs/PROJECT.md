@@ -33,7 +33,7 @@ Most expense apps are either toy-simple (one wallet, no transfers) or bookkeepin
 
 | Area         | Included                                                                                                                                            |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth         | Sign up, log in, Google sign-in, forgot password (email → 6-digit code → new password), sign out, sign out other devices, delete account            |
+| Auth         | Sign up, log in, Google sign-in, email verification and forgot password by emailed link, sign out, sign out other devices, delete account           |
 | First run    | Currency, time zone (from device), optional starting balances and starter categories                                                                |
 | Transactions | Income, Expense, Transfer, with amount, category, account (or from/to), date-time, note, repeat rule, instalment plan (credit card only), favourite |
 | Views        | Month overview, Daily, Stats (week / month / year), Accounts and net worth, Search and filters, Transaction detail and edit, Empty month            |
@@ -45,7 +45,7 @@ Most expense apps are either toy-simple (one wallet, no transfers) or bookkeepin
 ### 2.2 Delivery phases
 
 1. **Foundation:** repo scaffolds, tooling, CI, env validation, logging, error format, health check. Theme tokens and layout shells in web and app.
-2. **Auth:** sign up, log in, refresh-token rotation, forgot password with email OTP, Google sign-in, sessions, delete account.
+2. **Auth:** sign up, log in, refresh-token rotation, email verification and password reset by link, Google sign-in, sessions, delete account.
 3. **Ledger core:** accounts, categories, transactions (CRUD, soft delete and undo), setup flow, Month and Daily views.
 4. **Insight:** Stats (donut, ranked list, trends), Accounts with net worth and credit-card bill, Search with filters and CSV export (web).
 5. **Automation:** favourites, repeat rules (server job, idempotent), instalments.
@@ -103,12 +103,13 @@ These come from design spec §1.1 and §9. Change them only with the product own
 - Web is a separate React + Vite app, not React Native Web. This overrides design spec §0.1. The web app must implement all four layout shells (phone, tablet, desktop, large).
 - Styling is Tailwind CSS only in both clients, with the root setup in `src/index.css`.
 - **No emoji in the UI, ever** (13 Nov 2026), including category and account icons. Icons come only from an icon library: react-icons (Lucide set) on the web, lucide-react-native in the app.
+- **Email links, not codes** (14 Nov 2026): email verification and password reset use single-use links to the web app (`/auth/verify-email`, `/auth/reset-password`, token in the URL fragment). Mail goes out over SMTP from a dedicated Gmail account (`no-reply.kanaku.pillai@…`, app password) behind a `MailTransport`; dev logs emails to the console. See `kanaku-pillai-backend/docs/decisions/ADR-0001-email-links.md`.
 
 **Still open** (ask the product owner before building anything that depends on them):
 
 1. The logo direction (A glass tile, B ledger coin, C monoline wordmark). Use the `க` glyph in a rounded tile meanwhile.
 2. The final app name (Kanaku Pillai, Kaneo or Tallio).
-3. Which email provider sends OTP codes (for example SES, Resend or Postmark). Code against a `MailTransport` interface. Dev logs codes to the console.
+3. ~~Which email provider sends OTP codes~~ **Decided (14 Nov 2026):** Gmail SMTP for now (see Decided). Revisit a transactional provider (SES, Resend, Postmark) if volume passes Gmail's daily sending limit.
 4. List style: individual L0 rows or a flat list with dividers.
 5. Hosting and deploy target for the API, the web app and MongoDB.
 

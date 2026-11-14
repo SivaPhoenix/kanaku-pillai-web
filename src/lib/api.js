@@ -91,7 +91,8 @@ export async function apiRequest(
 
   if (!res.ok) throw await parseError(res);
   if (responseType === "blob") return { blob: await res.blob(), headers: res.headers };
-  if (res.status === 204) return null;
+  // 202 (accepted, e.g. emails queued) and 204 carry no body.
+  if (res.status === 202 || res.status === 204) return null;
   const payload = await res.json();
   return responseType === "envelope"
     ? { data: payload.data, page: payload.page ?? null }

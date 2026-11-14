@@ -14,6 +14,7 @@ import {
 } from "../components/ui/index.js";
 import { useAccounts, useAccountSummary } from "../hooks/useLedger.js";
 import { useSettings } from "../hooks/useSettings.js";
+import { cn } from "../lib/cn.js";
 
 const GROUPS = [
   { label: "Bank", types: ["bank"] },
@@ -24,13 +25,13 @@ const GROUPS = [
 
 function Tile({ label, tone, minor, money, hidden }) {
   return (
-    <div className="min-w-0 rounded-xl surface-l0 p-3">
+    <div className="@container min-w-0 rounded-xl surface-l0 p-3">
       <p className="text-[13px] font-semibold text-text-muted-2">{label}</p>
       <AmountText
         minor={minor ?? 0}
         {...money}
         hidden={hidden}
-        className={`text-[18px] whitespace-nowrap ${tone}`}
+        className={cn("text-[clamp(11px,10cqi,18px)] whitespace-nowrap", tone)}
       />
     </div>
   );
@@ -70,7 +71,7 @@ export function AccountsPage() {
       />
 
       <section aria-label="Net worth" className="flex flex-col gap-4 rounded-2xl surface-l2 p-5">
-        <div>
+        <div className="@container min-w-0">
           <p className="text-[13px] font-semibold text-text-muted-2">Net worth</p>
           {summary.isError ? (
             <Alert className="mt-2">
@@ -84,7 +85,7 @@ export function AccountsPage() {
               minor={summary.data?.netWorthMinor ?? 0}
               {...money}
               hidden={hidden}
-              className="text-[32px] whitespace-nowrap"
+              className="text-[clamp(20px,10cqi,32px)] whitespace-nowrap"
             />
           )}
         </div>

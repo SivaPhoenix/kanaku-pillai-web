@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { AccountForm } from "../components/accounts/AccountForm.jsx";
 import { AccountRow } from "../components/accounts/AccountRow.jsx";
 import { PageHeader } from "../components/layout/PageHeader.jsx";
@@ -253,21 +253,30 @@ function AccountsTab() {
   );
 }
 
+// Opened from another screen (the entry form, Month), back returns there; opened from Settings or directly, it goes to Settings.
+function BackButton() {
+  const navigate = useNavigate();
+  const backLabel = useLocation().state?.backLabel;
+  if (typeof backLabel === "string" && backLabel) {
+    return <IconButton icon="back" label={backLabel} onClick={() => navigate(-1)} />;
+  }
+  return <IconButton as={Link} to="/settings" icon="back" label="Back to Settings" />;
+}
+
 export function ListsPage() {
+  const location = useLocation();
   const [params, setParams] = useSearchParams();
   const tab = ["income", "accounts"].includes(params.get("tab")) ? params.get("tab") : "expense";
   const group = tab === "accounts" ? "accounts" : "categories";
 
   function setTab(value) {
-    setParams({ tab: value }, { replace: true });
+    // Keep the navigation state, so back still returns to the screen that opened this page.
+    setParams({ tab: value }, { replace: true, state: location.state });
   }
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
-      <PageHeader
-        title="Manage lists"
-        leading={<IconButton as={Link} to="/settings" icon="back" label="Back to Settings" />}
-      />
+      <PageHeader title="Manage lists" leading={<BackButton />} />
       <Segmented
         aria-label="List"
         options={GROUPS}

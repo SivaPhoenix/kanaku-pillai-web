@@ -28,7 +28,29 @@ export const router = createBrowserRouter([
                 path: "signup",
                 lazy: page(() => import("./pages/auth/SignupPage.jsx"), "SignupPage"),
               },
+              {
+                path: "forgot-password",
+                lazy: page(
+                  () => import("./pages/auth/ForgotPasswordPage.jsx"),
+                  "ForgotPasswordPage",
+                ),
+              },
             ],
+          },
+        ],
+      },
+      // Email links open in any browser, signed in or out, so these two skip RedirectIfAuthenticated.
+      {
+        path: "auth",
+        element: <AuthLayout />,
+        children: [
+          {
+            path: "reset-password",
+            lazy: page(() => import("./pages/auth/ResetPasswordPage.jsx"), "ResetPasswordPage"),
+          },
+          {
+            path: "verify-email",
+            lazy: page(() => import("./pages/auth/VerifyEmailPage.jsx"), "VerifyEmailPage"),
           },
         ],
       },

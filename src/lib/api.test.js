@@ -28,6 +28,17 @@ describe("apiRequest", () => {
     expect(init.credentials).toBe("same-origin");
   });
 
+  it("returns null for empty 202 and 204 responses", async () => {
+    fetch.mockResolvedValueOnce(new Response(null, { status: 202 }));
+    await expect(
+      apiRequest("/auth/forgot-password", { method: "POST", auth: false }),
+    ).resolves.toBeNull();
+    fetch.mockResolvedValueOnce(new Response(null, { status: 204 }));
+    await expect(
+      apiRequest("/auth/reset-password/check", { method: "POST", auth: false }),
+    ).resolves.toBeNull();
+  });
+
   it("refreshes once on TOKEN_EXPIRED and retries with the new token", async () => {
     fetch
       .mockResolvedValueOnce(json(401, { error: { code: "TOKEN_EXPIRED", message: "expired" } }))

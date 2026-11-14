@@ -26,7 +26,7 @@
 
 | Area | Included |
 |---|---|
-| Auth | Sign up, log in, Google sign-in button, forgot password (email → 6-digit code → new password → done), sign out, delete account |
+| Auth | Sign up, log in, Google sign-in button, email verification (link), forgot password (email → reset link → new password → done), sign out, delete account |
 | First run | Setup: currency, time zone (auto from device), optional starting balances (desktop/large), optional starter categories (large) |
 | Transactions | Income, Expense, Transfer. Fields: amount, category (income/expense only), account (or from/to for a transfer), date + time, note, repeat rule, instalment plan (credit card), favourite (template) |
 | Views | Month overview, Daily, Stats (week / month / year), Accounts, Search & filters, Transaction detail/edit, Empty month |
@@ -254,7 +254,8 @@ Implement these, but **do not render key badges in the UI** (put them in tooltip
 ## 6. Routes
 
 ```
-/auth/login            /auth/signup           /auth/forgot (step state 1–4)
+/auth/login            /auth/signup           /auth/forgot-password (steps 1–2)
+/auth/reset-password#token=…                  /auth/verify-email#token=…
 /setup                 (after first sign-up)
 /month?m=2026-10       (home; next month with no data → empty state)
 /daily?d=2026-10-22
@@ -287,19 +288,23 @@ Mock data used throughout is in §10. Each screen below is the phone spec; §8 l
 - Phone scrolls (the design frame is 390×960). Tablet and above: name/email and password/confirm sit in two columns.
 - On success, go to **Setup**.
 
-### 7.3 Forgot password (four steps, one route)
-1. **Email**: "Reset your password", Email, **Send code**, and the note "For privacy we show the same message whether or not the email has an account." Never reveal whether an account exists.
-2. **Code**: "Check your email", masked address "s•••@example.com", 6-digit OTP, **Verify code**, and "Didn't get it? Resend in 0:42" (live countdown; Resend becomes a link at 0).
-3. **New password**: New + Confirm, with rules shown live and checked: 8+ characters · a number and a symbol · passwords match. Then **Update password**.
-4. **Done**: check icon, "Password updated", "You've been signed out of other devices.", **Back to sign in**.
-- Step indicator "Step N of 3" with 3 dots (the current dot is a 22px pill). The back button goes to the previous step.
+### 7.3 Forgot password (reset link; decided 14 Nov 2026, replaces the 6-digit code)
+1. **Email** (`/auth/forgot-password`): "Reset your password", Email, **Send reset link**, and the note "For privacy we show the same message whether or not the email has an account." Never reveal whether an account exists.
+2. **Check your email**: masked address "s•••@example.com", "The link expires in 30 minutes", "Didn't get it? Resend in 0:60" (live countdown; Resend becomes a link at 0), and "Use a different email".
+3. **New password** (`/auth/reset-password`, opened from the email; the token is in the URL fragment): New + Confirm, with rules shown live and checked: 8+ characters · a number and a symbol · passwords match. Then **Reset password**. An expired or used link shows "This link has expired" with **Request a new link**.
+4. **Done**: check icon, "Password changed", "You've been signed out on every device. Sign in with your new password.", **Sign in**.
+
+### 7.3a Email verification (link)
+- After email sign-up the API emails a verification link (valid 24 hours). Sign-in is not blocked while unverified.
+- `/auth/verify-email` (opened from the email, signed in or not): verifying → **Email verified** (Continue / Sign in) or **This link has expired** (Send a new link when signed in).
+- Signed-in password accounts that are unverified see a slim dismissible alert "Verify your email to keep your account secure." with **Resend email**, and Settings → profile shows "Email not verified" with **Resend verification email**.
 
 ### 7.4 Setup (first run)
 - "Welcome, {first name}", title "Set up your account", subtitle "Pick the currency you track in. You can change it later in Settings."
 - **Currency** radio grid (phone 2 columns × 3: INR, USD, EUR, GBP, AED, SGD; each tile shows symbol + code + name), an "All currencies…" link that opens the searchable picker, and a preview line "Amounts will look like ₹1,23,456.50" (live `Intl` format of 123456.5).
 - **Time zone** info row: globe icon, "Asia/Kolkata · IST (UTC+05:30)", "Taken from your phone · decides which day an entry falls on".
 - **Start tracking** (primary) goes to Month.
-- Desktop adds **Starting balances (optional)**: Savings, Wallet (cash), and Credit card amount owed. Large also adds **Starter categories**: toggle chips, all on by default.
+- Desktop adds **Starting balances (optional)**: Savings, Wallet (cash), Credit card amount owed, and SIP & Stocks (investment). Large also adds **Starter categories**: toggle chips, all on by default.
 
 ### 7.5 Month (home)
 - Header: month switcher pill ("‹ October 2026 ›"; Next goes to the empty state when there is no data), Settings gear, and Search icon.
@@ -374,7 +379,7 @@ Mock data used throughout is in §10. Each screen below is the phone spec; §8 l
   - **Appearance** segmented: System / Light / Dark (applies live).
   - **Week starts on**: Monday / Sunday.
 - **LISTS**: Categories (count), Payment modes / Accounts (count). Both open Manage lists.
-- **ACCOUNT**: Change password (reuses the forgot flow from step 2 with the email prefilled), Sign out, **Delete account** (danger text; confirm with a typed confirmation). App-store rules require in-app account deletion when sign-up exists.
+- **ACCOUNT**: Change password (dialog: Current password, New password with the strength meter, Confirm; **Update password**; "Other devices will be signed out." On success a toast "Password changed. Other devices were signed out."). Google-only accounts see **Set password** instead, which sends a reset link to the account email (§7.3). Sign out, **Delete account** (danger text; confirm with a typed confirmation). App-store rules require in-app account deletion when sign-up exists.
 - Footer: "Kanaku Pillai · v{version}".
 
 ### 7.14 Empty month
