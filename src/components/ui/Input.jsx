@@ -19,7 +19,7 @@ export function Input({
   const describedBy = [error ? errorId : null, hint ? hintId : null].filter(Boolean).join(" ");
 
   return (
-    <div className={cn("flex w-full flex-col gap-1.5", className)}>
+    <div className={cn("flex w-full min-w-0 flex-col gap-1.5", className)}>
       {label ? (
         <label htmlFor={inputId} className="text-[13px] font-semibold text-text-muted-2">
           {label}
@@ -32,7 +32,8 @@ export function Input({
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy || undefined}
           className={cn(
-            "h-[50px] w-full rounded-lg surface-l0 px-4 text-[15px] text-text tablet:h-[52px] large:h-[54px]",
+            // min-w-0: native date/time inputs otherwise refuse to shrink below a wide built-in minimum.
+            "h-[50px] w-full min-w-0 rounded-lg surface-l0 px-4 text-[15px] text-text tablet:h-[52px] large:h-[54px]",
             "placeholder:text-text-muted aria-invalid:border-danger",
             trailing && "pr-12",
             inputClassName,

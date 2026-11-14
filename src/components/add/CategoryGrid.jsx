@@ -34,7 +34,7 @@ export function CategoryGrid({ kind, categories, value, onChange, error }) {
         <div
           role="radiogroup"
           aria-label="Category"
-          className="grid grid-cols-3 gap-2 tablet:grid-cols-4"
+          className="grid grid-cols-3 gap-2 desktop:grid-cols-4"
         >
           {categories.map((category) => {
             const selected = category.id === value;

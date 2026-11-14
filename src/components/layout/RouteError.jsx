@@ -1,9 +1,31 @@
+import { useEffect, useState } from "react";
 import { Link, isRouteErrorResponse, useRouteError } from "react-router";
-import { Button } from "../ui/index.js";
+import {
+  canReloadForStaleBuild,
+  isChunkLoadError,
+  reloadOnceForStaleBuild,
+} from "../../lib/stale-build.js";
+import { Button, Spinner } from "../ui/index.js";
 
 export function RouteError() {
   const error = useRouteError();
   const notFound = isRouteErrorResponse(error) && error.status === 404;
+  // A page chunk from an older deploy: reload once into the new build instead of showing an error.
+  // Decided once on mount; the 30-second guard means a real error is shown rather than reloading in a loop.
+  const [reloading] = useState(() => isChunkLoadError(error) && canReloadForStaleBuild());
+
+  useEffect(() => {
+    if (reloading) reloadOnceForStaleBuild();
+  }, [reloading]);
+
+  if (reloading) {
+    return (
+      <main id="main" className="grid min-h-dvh place-items-center text-text-muted">
+        <Spinner />
+      </main>
+    );
+  }
+
   return (
     <main
       id="main"

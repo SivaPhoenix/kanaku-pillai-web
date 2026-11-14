@@ -283,7 +283,9 @@ export function TransactionForm({ transaction, initial, accounts, categories }) 
 
         {formError ? <Alert>{formError}</Alert> : null}
 
-        <div className="grid gap-5 tablet:grid-cols-2 tablet:gap-8">
+        {/* grid-cols-1 (minmax(0,1fr)): an implicit auto column would grow to the native date/time inputs' minimum
+            width and push the whole form wider than a phone screen. */}
+        <div className="grid grid-cols-1 gap-5 tablet:grid-cols-2 tablet:gap-8">
           <div className="flex flex-col gap-5">
             <Segmented
               aria-label="Entry type"
