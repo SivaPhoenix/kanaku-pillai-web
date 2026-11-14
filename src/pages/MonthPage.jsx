@@ -11,7 +11,9 @@ import {
   AmountText,
   Button,
   Card,
+  Divider,
   EmptyState,
+  Icon,
   IconButton,
   Spinner,
 } from "../components/ui/index.js";
@@ -43,11 +45,49 @@ function ErrorBlock({ message, onRetry }) {
   );
 }
 
+// A container, so the amount inside can size itself to the tile width (cqi) instead of overflowing it on phones.
 function Tile({ label, children, className }) {
   return (
-    <div className={cn("min-w-0", className)}>
+    <div className={cn("@container min-w-0", className)}>
       <p className="text-[13px] font-semibold text-text-muted-2">{label}</p>
       {children}
+    </div>
+  );
+}
+
+function InvestRow({ icon, label, children }) {
+  return (
+    <div className="@container flex min-w-0 items-center gap-3">
+      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg surface-l0 text-text-muted-2">
+        <Icon name={icon} size={18} />
+      </span>
+      <p className="min-w-0 flex-1 text-[14px] text-text-muted-2">{label}</p>
+      {children}
+    </div>
+  );
+}
+
+// Investing is a transfer, so it never touches income, expense or balance; this shows it next to them (values from the API).
+function InvestingSummary({ data, money, className }) {
+  if (data.investedMinor === 0 && data.withdrawnMinor === 0) return null;
+  const amount = "text-[clamp(13px,4.5cqi,16px)] whitespace-nowrap";
+  return (
+    <div
+      aria-label="Investing this month"
+      role="group"
+      className={cn("flex flex-col gap-3", className)}
+    >
+      <InvestRow icon="trend" label="Invested">
+        <AmountText minor={data.investedMinor} type="transfer" {...money} className={amount} />
+      </InvestRow>
+      {data.withdrawnMinor > 0 ? (
+        <InvestRow icon="refund" label="Taken out of investments">
+          <AmountText minor={data.withdrawnMinor} type="transfer" {...money} className={amount} />
+        </InvestRow>
+      ) : null}
+      <InvestRow icon="wallet" label="Left after investing">
+        <BalanceText minor={data.afterInvestingMinor} money={money} className={amount} />
+      </InvestRow>
     </div>
   );
 }
@@ -171,7 +211,7 @@ export function MonthPage() {
                   minor={data.balanceMinor}
                   money={money}
                   muted={isEmpty}
-                  className="text-[32px]"
+                  className="text-[clamp(20px,10cqi,32px)]"
                 />
               </Tile>
               <div className="grid grid-cols-2 gap-3">
@@ -180,7 +220,10 @@ export function MonthPage() {
                     minor={data.incomeMinor}
                     type={isEmpty ? undefined : "income"}
                     {...money}
-                    className={cn("text-[18px] whitespace-nowrap", isEmpty && "text-text-muted")}
+                    className={cn(
+                      "text-[clamp(11px,10cqi,18px)] whitespace-nowrap",
+                      isEmpty && "text-text-muted",
+                    )}
                   />
                 </Tile>
                 <Tile label="Expense" className="rounded-xl surface-l0 p-3">
@@ -188,10 +231,19 @@ export function MonthPage() {
                     minor={data.expenseMinor}
                     type={isEmpty ? undefined : "expense"}
                     {...money}
-                    className={cn("text-[18px] whitespace-nowrap", isEmpty && "text-text-muted")}
+                    className={cn(
+                      "text-[clamp(11px,10cqi,18px)] whitespace-nowrap",
+                      isEmpty && "text-text-muted",
+                    )}
                   />
                 </Tile>
               </div>
+              {data.investedMinor > 0 || data.withdrawnMinor > 0 ? (
+                <>
+                  <Divider />
+                  <InvestingSummary data={data} money={money} />
+                </>
+              ) : null}
             </div>
           </section>
 
@@ -229,6 +281,15 @@ export function MonthPage() {
                 />
               </Tile>
             </Card>
+            {data.investedMinor > 0 || data.withdrawnMinor > 0 ? (
+              <Card className="col-span-3 min-w-0">
+                <InvestingSummary
+                  data={data}
+                  money={money}
+                  className="desktop:grid desktop:grid-cols-3 desktop:gap-6"
+                />
+              </Card>
+            ) : null}
           </section>
 
           {isEmpty ? (
@@ -261,6 +322,7 @@ export function MonthPage() {
                       <h2 className="text-[15px] font-bold text-text">Spending by category</h2>
                       <Link
                         to="/lists?tab=expense"
+                        state={{ backLabel: "Back to Month" }}
                         className="inline-flex min-h-11 items-center text-[14px] font-bold text-link"
                       >
                         Edit list

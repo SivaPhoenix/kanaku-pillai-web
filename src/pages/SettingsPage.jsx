@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { SelectField } from "../components/accounts/SelectField.jsx";
 import { PageHeader } from "../components/layout/PageHeader.jsx";
+import { ChangePasswordDialog } from "../components/settings/ChangePasswordDialog.jsx";
 import { CurrencyDialog } from "../components/settings/CurrencyDialog.jsx";
 import { DeleteAccountDialog } from "../components/settings/DeleteAccountDialog.jsx";
 import { ProfileDialog } from "../components/settings/ProfileDialog.jsx";
@@ -17,8 +18,11 @@ import {
   Switch,
 } from "../components/ui/index.js";
 import { useAuth } from "../hooks/useAuth.js";
+import { useResendVerification } from "../hooks/useResendVerification.js";
 import { useTheme } from "../hooks/useTheme.js";
+import { useToast } from "../hooks/useToast.js";
 import { ApiError } from "../lib/api.js";
+import { authApi } from "../lib/auth-api.js";
 import { config } from "../lib/config.js";
 import { meApi } from "../lib/ledger-api.js";
 
@@ -96,10 +100,32 @@ export function SettingsPage() {
   const [dialog, setDialog] = useState(null);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [sendingLink, setSendingLink] = useState(false);
+  const toast = useToast();
+  const { resend, sending } = useResendVerification();
+  const needsVerification = hasPassword && user.emailVerified === false;
 
   async function signOut() {
     await logout();
     navigate("/auth/login", { replace: true });
+  }
+
+  // Google-only accounts have no current password, so they set one through the emailed reset link.
+  async function sendSetPasswordLink() {
+    setSendingLink(true);
+    try {
+      await authApi.requestPasswordReset(user.email);
+      toast.show({
+        message: `We sent a link to ${user.email}. Open it to set your password.`,
+      });
+    } catch (e) {
+      toast.show({
+        message: e instanceof ApiError ? e.message : "Couldn't send the link. Try again.",
+        tone: "danger",
+      });
+    } finally {
+      setSendingLink(false);
+    }
   }
 
   async function saveSettings(body) {
@@ -129,6 +155,17 @@ export function SettingsPage() {
           <p className="truncate text-[17px] font-bold text-text">{user.name}</p>
           <p className="truncate text-[14px] text-text-muted">{user.email}</p>
           {hasGoogle ? <p className="text-[13px] text-text-muted">Signed in with Google</p> : null}
+          {needsVerification ? (
+            <div className="mt-1 flex flex-col items-start gap-2">
+              <p className="flex items-center gap-1.5 text-[13px] font-semibold text-warning">
+                <Icon name="warning" size={14} className="shrink-0" />
+                Email not verified
+              </p>
+              <Button variant="secondary" loading={sending} onClick={resend}>
+                Resend verification email
+              </Button>
+            </div>
+          ) : null}
         </div>
         <Button variant="ghost" onClick={() => setDialog("profile")}>
           Edit
@@ -220,8 +257,22 @@ export function SettingsPage() {
         <SectionLabel>Account</SectionLabel>
         <Card className="flex flex-col gap-3">
           {hasPassword ? (
-            <Row as="button" type="button" disabled title="Coming soon" label="Change password" />
-          ) : null}
+            <Row
+              as="button"
+              type="button"
+              label="Change password"
+              onClick={() => setDialog("password")}
+            />
+          ) : (
+            <Row
+              as="button"
+              type="button"
+              label={sendingLink ? "Sending link…" : "Set password"}
+              value="Email me a link"
+              disabled={sendingLink}
+              onClick={sendSetPasswordLink}
+            />
+          )}
           <Button variant="secondary" leftIcon="logout" onClick={signOut}>
             Sign out
           </Button>
@@ -238,6 +289,7 @@ export function SettingsPage() {
       <ProfileDialog open={dialog === "profile"} onClose={closeDialog} />
       <CurrencyDialog open={dialog === "currency"} onClose={closeDialog} />
       <DeleteAccountDialog open={dialog === "delete"} onClose={closeDialog} />
+      <ChangePasswordDialog open={dialog === "password"} onClose={closeDialog} />
       <Dialog open={dialog === "sessions"} onClose={closeDialog} title="Signed-in devices">
         <SessionsList locale={locale} />
       </Dialog>

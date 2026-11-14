@@ -1,9 +1,49 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router";
 import { PHONE_TABS, RAIL_ITEMS, SIDEBAR_ITEMS } from "../../lib/navigation.js";
 import { cn } from "../../lib/cn.js";
 import { useAuth } from "../../hooks/useAuth.js";
-import { Avatar, Button, Icon, Logo, Spinner } from "../ui/index.js";
+import { useResendVerification } from "../../hooks/useResendVerification.js";
+import { Alert, Avatar, Button, Icon, IconButton, Logo, Spinner } from "../ui/index.js";
+
+const BANNER_DISMISSED_KEY = "kp-verify-banner-dismissed";
+
+function wasDismissed() {
+  try {
+    return sessionStorage.getItem(BANNER_DISMISSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function VerifyEmailBanner() {
+  const [dismissed, setDismissed] = useState(wasDismissed);
+  const { resend, sending } = useResendVerification();
+  if (dismissed) return null;
+
+  function dismiss() {
+    try {
+      sessionStorage.setItem(BANNER_DISMISSED_KEY, "1");
+    } catch {
+      // Storage can be blocked; the banner then only stays hidden until the next reload.
+    }
+    setDismissed(true);
+  }
+
+  return (
+    <Alert tone="warning" align="center" className="mb-4 [&>div]:flex-1">
+      <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
+          <p className="min-w-0 flex-1 basis-48">Verify your email to keep your account secure.</p>
+          <Button variant="ghost" loading={sending} onClick={resend} className="h-11 px-2">
+            Resend email
+          </Button>
+        </div>
+        <IconButton icon="close" label="Dismiss" onClick={dismiss} />
+      </div>
+    </Alert>
+  );
+}
 
 const navState = ({ isActive }) => (isActive ? "bg-primary/20 text-text" : "text-text-muted-2");
 
@@ -131,6 +171,8 @@ function Sidebar() {
 }
 
 export function AppLayout() {
+  const { user } = useAuth();
+  const showVerifyBanner = user?.emailVerified === false && user.authMethods?.includes("password");
   return (
     <div className="min-h-dvh">
       <a
@@ -148,6 +190,7 @@ export function AppLayout() {
         className="min-w-0 px-5 pt-4 pb-32 tablet:ml-28 tablet:px-6 tablet:pt-6 tablet:pb-10 desktop:ml-64 large:ml-68 large:px-7"
       >
         <div className="mx-auto w-full max-w-[1400px]">
+          {showVerifyBanner ? <VerifyEmailBanner /> : null}
           <Suspense
             fallback={
               <div className="grid min-h-[50dvh] place-items-center text-text-muted">

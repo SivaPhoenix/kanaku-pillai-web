@@ -99,6 +99,7 @@ const BALANCE_FIELDS = [
   { name: "savings", label: "Savings (bank)", key: "savingsMinor" },
   { name: "wallet", label: "Wallet (cash)", key: "walletMinor" },
   { name: "card", label: "Credit card — amount owed", key: "creditCardOwedMinor" },
+  { name: "investments", label: "SIP & Stocks (investment)", key: "investmentsMinor" },
 ];
 
 function CurrencyTile({ code, selected, onSelect, displayNames }) {
@@ -130,14 +131,19 @@ function CurrencyTile({ code, selected, onSelect, displayNames }) {
 }
 
 // First run (design spec §7.4): pick the currency, confirm the zone, optionally add opening balances; the server then
-// creates the default accounts (Savings, Wallet, Credit card, Debit card) and starter categories.
+// creates the default accounts (Savings, Wallet, Credit card, Debit card, SIP & Stocks) and starter categories.
 export function SetupPage() {
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [currencyCode, setCurrencyCode] = useState("INR");
   const [showAll, setShowAll] = useState(false);
   const [search, setSearch] = useState("");
-  const [balances, setBalances] = useState({ savings: "", wallet: "", card: "" });
+  const [balances, setBalances] = useState({
+    savings: "",
+    wallet: "",
+    card: "",
+    investments: "",
+  });
   const [balanceErrors, setBalanceErrors] = useState({});
   const [starterCategories, setStarterCategories] = useState(true);
   const [error, setError] = useState(null);

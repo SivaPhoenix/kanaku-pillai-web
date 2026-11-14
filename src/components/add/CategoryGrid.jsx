@@ -21,6 +21,7 @@ export function CategoryGrid({ kind, categories, value, onChange, error }) {
         <h2 className="text-[13px] font-semibold text-text-muted-2">CATEGORY</h2>
         <Link
           to={`/lists?tab=${kind}`}
+          state={{ backLabel: "Back to entry" }}
           aria-label="Edit categories"
           className="inline-flex size-11 items-center justify-center rounded-lg text-link"
         >

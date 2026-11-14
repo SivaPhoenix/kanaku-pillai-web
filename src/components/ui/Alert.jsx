@@ -11,17 +11,23 @@ const ICON_TONES = {
   warning: "text-warning",
 };
 
-export function Alert({ tone = "danger", className, children }) {
+// align="center" suits one-row alerts with buttons; the default keeps the icon on the first line of longer text.
+export function Alert({ tone = "danger", align = "start", className, children }) {
   return (
     <div
       role={tone === "danger" ? "alert" : undefined}
       className={cn(
-        "flex items-start gap-3 rounded-lg border border-l-[3px] border-surface-0-border bg-surface-0 p-3 text-[14px] text-text",
+        "flex gap-3 rounded-lg border border-l-[3px] border-surface-0-border bg-surface-0 p-3 text-[14px] text-text",
+        align === "center" ? "items-center" : "items-start",
         TONES[tone],
         className,
       )}
     >
-      <Icon name="warning" size={18} className={cn("mt-0.5 shrink-0", ICON_TONES[tone])} />
+      <Icon
+        name="warning"
+        size={18}
+        className={cn("shrink-0", align === "start" && "mt-0.5", ICON_TONES[tone])}
+      />
       <div className="min-w-0">{children}</div>
     </div>
   );

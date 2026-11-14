@@ -98,15 +98,12 @@ export function LoginPage() {
               error={errors.password?.message}
               {...register("password")}
             />
-            <a
-              href="#"
-              aria-disabled="true"
-              title="Coming soon"
-              onClick={(event) => event.preventDefault()}
-              className="inline-flex min-h-11 cursor-not-allowed items-center self-end text-[14px] font-semibold text-link opacity-50"
+            <Link
+              to="/auth/forgot-password"
+              className="inline-flex min-h-11 items-center self-end text-[14px] font-semibold text-link"
             >
               Forgot password?
-            </a>
+            </Link>
           </div>
           <Checkbox className="hidden tablet:flex" {...register("keepSignedIn")}>
             Keep me signed in
