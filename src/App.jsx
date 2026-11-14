@@ -1,5 +1,6 @@
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { Analytics } from "@vercel/analytics/react";
 import { useState } from "react";
 import { RouterProvider } from "react-router";
 import { AuthProvider } from "./context/AuthProvider.jsx";
@@ -18,16 +19,20 @@ function MaybeGoogleProvider({ children }) {
 export function App() {
   const [queryClient] = useState(createQueryClient);
   return (
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <MaybeGoogleProvider>
-          <AuthProvider>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </AuthProvider>
-        </MaybeGoogleProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <MaybeGoogleProvider>
+            <AuthProvider>
+              <ToastProvider>
+                <RouterProvider router={router} />
+              </ToastProvider>
+            </AuthProvider>
+          </MaybeGoogleProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+      {/* Vercel Web Analytics: page views only (no cookies); route changes are picked up from history. */}
+      <Analytics />
+    </>
   );
 }
